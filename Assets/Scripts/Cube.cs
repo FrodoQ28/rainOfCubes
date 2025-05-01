@@ -12,8 +12,7 @@ public class Cube : MonoBehaviour
     private int _minTimeToDestroy = 2;
     private int _maxTimeToDestroy = 5;
 
-    public event Action<Cube> DetectedCollision;
-    public event Action<Cube> Destroing;
+    public event Action<Cube> DestroingCube;
 
     private void Awake()
     {
@@ -48,6 +47,6 @@ public class Cube : MonoBehaviour
 
         yield return waitTime;
 
-        Destroing?.Invoke(this);
+        DestroingCube?.Invoke(this);
     }
 }

@@ -46,7 +46,7 @@ public class CubeSpawner : MonoBehaviour
         cube.transform.position = GetSpawnPosition();
         cube.gameObject.SetActive(true);
 
-        cube.Destroing += ReleaseToPool;
+        cube.DestroingCube += ReleaseToPool;
     }
 
     private Vector3 GetSpawnPosition()
@@ -68,6 +68,6 @@ public class CubeSpawner : MonoBehaviour
     {
         _pool.Release(cube);
 
-        cube.Destroing -= ReleaseToPool;
+        cube.DestroingCube -= ReleaseToPool;
     }
 }
