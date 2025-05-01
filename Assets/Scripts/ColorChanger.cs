@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class ColorChanger
 {
-    public void ChangeColor(GameObject cube)
+    public void ChangeColor(Cube cube)
     {
         Color color = new Color(Random.value, Random.value, Random.value);
 
@@ -10,7 +10,7 @@ public class ColorChanger
             renderer.material.color = color;
     }
 
-    public void SetDefaultColor(GameObject cube)
+    public void SetDefaultColor(Cube cube)
     {
         Color color = Color.white;
 

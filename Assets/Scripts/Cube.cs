@@ -1,17 +1,30 @@
 using System;
+using System.Collections;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(Renderer))]
 
 public class Cube : MonoBehaviour
 {
-    public event Action<GameObject> OnDestroy;
-
+    private ColorChanger _colorChanger;
     private bool _isOnDestroy;
+    private int _minTimeToDestroy = 2;
+    private int _maxTimeToDestroy = 5;
+
+    public event Action<Cube> DetectedCollision;
+    public event Action<Cube> Destroing;
+
+    private void Awake()
+    {
+        _colorChanger = new ColorChanger();
+    }
 
     private void OnEnable()
     {
         _isOnDestroy = false;
+
+        _colorChanger.SetDefaultColor(this);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -22,8 +35,19 @@ public class Cube : MonoBehaviour
             {
                 _isOnDestroy = true;
 
-                OnDestroy?.Invoke(this.gameObject);
+                StartCoroutine(WaitOfDestroy(Random.Range(_minTimeToDestroy, _maxTimeToDestroy)));
+
+                _colorChanger.ChangeColor(this);
             }
         }
+    }
+
+    private IEnumerator WaitOfDestroy(float delay)
+    {
+        WaitForSeconds waitTime = new WaitForSeconds(delay);
+
+        yield return waitTime;
+
+        Destroing?.Invoke(this);
     }
 }

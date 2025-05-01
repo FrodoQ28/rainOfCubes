@@ -337,8 +337,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 122134ff9454b8f4abbe935722751b67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cubePrefab: {fileID: 4345108623545459684, guid: 5a64798f460ca87468cdd3b62120f541, type: 3}
-  _platform: {fileID: 1027271736}
+  _cubePrefab: {fileID: 7388375586544715155, guid: 5a64798f460ca87468cdd3b62120f541, type: 3}
 --- !u!4 &1021102074
 Transform:
   m_ObjectHideFlags: 0

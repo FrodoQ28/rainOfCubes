@@ -4,48 +4,49 @@ using UnityEngine.Pool;
 
 public class CubeSpawner : MonoBehaviour
 {
-    [SerializeField] private GameObject _cubePrefab;
-    [SerializeField] private GameObject _platform;
+    [SerializeField] private Cube _cubePrefab;
 
-    private ObjectPool<GameObject> _pool;
-    private ColorChanger _colorChanger;
+    private ObjectPool<Cube> _pool;
     private float _repeatRate = 0.5f;
     private int _poolCapacity = 20;
     private int _poolMaxSize = 20;
-    private int _minTimeToDestroy = 2;
-    private int _maxTimeToDestroy = 5;
 
     private void Awake()
     {
-        _pool = new ObjectPool<GameObject>(
+        _pool = new ObjectPool<Cube>(
             createFunc: () => Instantiate(_cubePrefab),
             actionOnGet: (cube) => ActionOnGet(cube),
-            actionOnRelease: (cube) => cube.SetActive(false),
+            actionOnRelease: (cube) => cube.gameObject.SetActive(false),
             actionOnDestroy: (cube) => Destroy(cube),
             collectionCheck: true,
             defaultCapacity: _poolCapacity,
             maxSize: _poolMaxSize);
-
-        _colorChanger = new ColorChanger();
     }
 
     private void Start()
     {
-        InvokeRepeating(nameof(GetCube), 0f, _repeatRate);
+        StartCoroutine(GetCube(_repeatRate));
     }
 
-    private void GetCube() =>
-        _pool.Get();
+    private IEnumerator GetCube(float delay)
+    {
+        bool isRunning = true;
+        WaitForSeconds wait = new WaitForSeconds(delay);
 
-    private void ActionOnGet(GameObject cube)
+        while (isRunning)
+        {
+            _pool.Get();
+
+            yield return wait;
+        }
+    }
+
+    private void ActionOnGet(Cube cube)
     {
         cube.transform.position = GetSpawnPosition();
-        cube.SetActive(true);
+        cube.gameObject.SetActive(true);
 
-        _colorChanger.SetDefaultColor(cube);
-
-        if (cube.TryGetComponent(out Cube cubeComponent))
-            cubeComponent.OnDestroy += CubeDestroyAndPaint;
+        cube.Destroing += ReleaseToPool;
     }
 
     private Vector3 GetSpawnPosition()
@@ -63,22 +64,10 @@ public class CubeSpawner : MonoBehaviour
         return position;
     }
 
-    private void CubeDestroyAndPaint(GameObject cube)
+    private void ReleaseToPool(Cube cube)
     {
-        _colorChanger.ChangeColor(cube);
-
-        StartCoroutine(ReleaseToPool(cube));
-    }
-
-    private IEnumerator ReleaseToPool(GameObject cube)
-    {
-        WaitForSeconds waitTime = new WaitForSeconds(Random.Range(_minTimeToDestroy, _maxTimeToDestroy));
-
-        yield return waitTime;
-
         _pool.Release(cube);
 
-        if (cube.TryGetComponent(out Cube cubeComponent))
-            cubeComponent.OnDestroy -= CubeDestroyAndPaint;
+        cube.Destroing -= ReleaseToPool;
     }
 }
