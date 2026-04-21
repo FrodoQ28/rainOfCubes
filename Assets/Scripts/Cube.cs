@@ -3,32 +3,31 @@ using System.Collections;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-[RequireComponent(typeof(Renderer))]
+[RequireComponent(typeof(ColorChanger))]
 public class Cube : MonoBehaviour, ICubeDestroyable
 {
     public event Action<Vector3> Destroyed;
 
-    [SerializeField] private string _platformTag = "Platform";
-    [SerializeField] private float _minYToReturn = -10f;
-    [SerializeField] private float _maxLifeTimeWithoutHit = 10f;
+    [SerializeField] private string PlatformTag = "Platform";
+    [SerializeField] private float MinYToReturn = -10f;
+    [SerializeField] private float MaxLifeTimeWithoutHit = 10f;
+    [SerializeField] private int MinTimeToDestroy = 2;
+    [SerializeField] private int MaxTimeToDestroy = 5;
 
     private ColorChanger _colorChanger;
     private bool _isOnDestroy;
     private bool _hasTouchedPlatform;
-    private int _minTimeToDestroy = 2;
-    private int _maxTimeToDestroy = 5;
 
     private void Awake()
     {
-        _colorChanger = new ColorChanger();
+        _colorChanger = GetComponent<ColorChanger>();
     }
 
     private void OnEnable()
     {
         _isOnDestroy = false;
         _hasTouchedPlatform = false;
-        _colorChanger.SetDefaultColor(this);
-
+        _colorChanger.SetDefaultColor();
         StartCoroutine(CheckOutOfBounds());
     }
 
@@ -39,7 +38,7 @@ public class Cube : MonoBehaviour, ICubeDestroyable
 
     private void Update()
     {
-        if (_hasTouchedPlatform == false && transform.position.y < _minYToReturn && _isOnDestroy == false)
+        if (_hasTouchedPlatform == false && _isOnDestroy == false && transform.position.y < MinYToReturn)
         {
             _isOnDestroy = true;
             Destroyed?.Invoke(transform.position);
@@ -51,12 +50,12 @@ public class Cube : MonoBehaviour, ICubeDestroyable
         if (_isOnDestroy)
             return;
 
-        if (collision.gameObject.CompareTag(_platformTag))
+        if (collision.gameObject.CompareTag(PlatformTag))
         {
             _hasTouchedPlatform = true;
             _isOnDestroy = true;
-            StartCoroutine(DestroyAfterDelay(Random.Range(_minTimeToDestroy, _maxTimeToDestroy)));
-            _colorChanger.ChangeColor(this);
+            StartCoroutine(DestroyAfterDelay(Random.Range(MinTimeToDestroy, MaxTimeToDestroy)));
+            _colorChanger.SetRandomColor();
         }
     }
 
@@ -68,7 +67,7 @@ public class Cube : MonoBehaviour, ICubeDestroyable
 
     private IEnumerator CheckOutOfBounds()
     {
-        yield return new WaitForSeconds(_maxLifeTimeWithoutHit);
+        yield return new WaitForSeconds(MaxLifeTimeWithoutHit);
 
         if (_isOnDestroy == false)
         {

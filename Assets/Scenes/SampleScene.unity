@@ -693,7 +693,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
+  m_HorizontalAlignment: 4
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -768,14 +768,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c4622ed06ed6da449232e734fc7c1c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BombSpawner
-  _prefab: {fileID: 6049359119299611534, guid: f84806147f0b0364eaad4c72fbb32ad5, type: 3}
-  _spawnArea: {fileID: 1960427475}
-  _spawnedText: {fileID: 2128433104}
-  _createdText: {fileID: 1655736774}
-  _activeText: {fileID: 1153620591}
-  _repeatRate: 0.5
-  _poolCapacity: 20
-  _poolMaxSize: 20
+  Prefab: {fileID: 6049359119299611534, guid: f84806147f0b0364eaad4c72fbb32ad5, type: 3}
+  SpawnArea: {fileID: 1960427475}
+  RepeatRate: 0.5
+  PoolCapacity: 20
+  PoolMaxSize: 20
   _cubeSpawner: {fileID: 1021102073}
 --- !u!4 &744072075
 Transform:
@@ -1051,14 +1048,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 122134ff9454b8f4abbe935722751b67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _prefab: {fileID: 7388375586544715155, guid: 5a64798f460ca87468cdd3b62120f541, type: 3}
-  _spawnArea: {fileID: 1960427475}
-  _spawnedText: {fileID: 6679985}
-  _createdText: {fileID: 972812911}
-  _activeText: {fileID: 498629541}
-  _repeatRate: 0.5
-  _poolCapacity: 20
-  _poolMaxSize: 20
+  Prefab: {fileID: 7388375586544715155, guid: 5a64798f460ca87468cdd3b62120f541, type: 3}
+  SpawnArea: {fileID: 1960427475}
+  RepeatRate: 0.5
+  PoolCapacity: 20
+  PoolMaxSize: 20
 --- !u!4 &1021102074
 Transform:
   m_ObjectHideFlags: 0
@@ -1165,7 +1159,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
+  m_HorizontalAlignment: 4
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -1515,6 +1509,8 @@ GameObject:
   - component: {fileID: 1640055748}
   - component: {fileID: 1640055747}
   - component: {fileID: 1640055746}
+  - component: {fileID: 1640055750}
+  - component: {fileID: 1640055749}
   m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
@@ -1612,6 +1608,38 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &1640055749
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1640055744}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bae1e9c2b7caf034290d93606fbaa6cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpawnerStatsView
+  _spawner: {fileID: 744072074}
+  _spawnedText: {fileID: 2128433104}
+  _createdText: {fileID: 1655736774}
+  _activeText: {fileID: 1153620591}
+--- !u!114 &1640055750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1640055744}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bae1e9c2b7caf034290d93606fbaa6cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpawnerStatsView
+  _spawner: {fileID: 1021102073}
+  _spawnedText: {fileID: 6679985}
+  _createdText: {fileID: 972812911}
+  _activeText: {fileID: 498629541}
 --- !u!1 &1655736772
 GameObject:
   m_ObjectHideFlags: 0
@@ -1703,7 +1731,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
+  m_HorizontalAlignment: 4
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -1781,8 +1809,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62b87f6d5f3401e428053f52f2319882, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnAreaPlane
-  _spawnHeightOffset: 50
-  _edgeMargin: 10
+  SpawnHeightOffset: 15
+  EdgeMargin: 1
 --- !u!65 &1960427476
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2104,7 +2132,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
+  m_HorizontalAlignment: 4
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0

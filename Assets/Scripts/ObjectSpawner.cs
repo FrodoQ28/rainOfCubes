@@ -1,111 +1,109 @@
 using System;
 using System.Collections;
-using TMPro;
 using UnityEngine;
 using UnityEngine.Pool;
 
-public abstract class ObjectSpawner<T> : MonoBehaviour where T : MonoBehaviour
+public abstract class ObjectSpawner<T> : ObjectSpawnerBase where T : MonoBehaviour
 {
-    [Header("Setup")]
-    [SerializeField] protected T _prefab;
-    [SerializeField] protected SpawnAreaPlane _spawnArea;
+    [Header("Spawn Settings")]
+    [SerializeField] protected T Prefab;
+    [SerializeField] protected SpawnAreaPlane SpawnArea;
+    [SerializeField] protected float RepeatRate = 0.5f;
+    [SerializeField] protected int PoolCapacity = 20;
+    [SerializeField] protected int PoolMaxSize = 20;
 
-    [Header("UI")]
-    [SerializeField] private TextMeshProUGUI _spawnedText;
-    [SerializeField] private TextMeshProUGUI _createdText;
-    [SerializeField] private TextMeshProUGUI _activeText;
+    protected ObjectPool<T> Pool;
+    protected int SpawnedCount;
 
-    [Header("Pool Settings")]
-    [SerializeField] private float _repeatRate = 0.5f;
-    [SerializeField] private int _poolCapacity = 20;
-    [SerializeField] private int _poolMaxSize = 20;
+    public event Action<Vector3> ObjectDestroyedAt;
+    public override event Action StatsChanged;
 
-    protected ObjectPool<T> _pool;
-    protected int _spawnedCount;
-
-    public event Action<Vector3> DestroyedAt;
+    public override int TotalSpawned => SpawnedCount;
+    public override int TotalCreated => Pool?.CountAll ?? 0;
+    public override int TotalActive => Pool?.CountActive ?? 0;
 
     protected virtual void Awake()
     {
-        _pool = new ObjectPool<T>(
-            createFunc: () => Instantiate(_prefab),
-            actionOnGet: OnGet,
-            actionOnRelease: OnRelease,
+        if (Prefab == null)
+        {
+            Debug.LogError($"{name}: не назначен Prefab для {typeof(T).Name}");
+            enabled = false;
+            return;
+        }
+
+        if (SpawnArea == null)
+        {
+            Debug.LogError($"{name}: не назначен SpawnAreaPlane");
+            enabled = false;
+            return;
+        }
+
+        Pool = new ObjectPool<T>(
+            createFunc: () => Instantiate(Prefab),
+            actionOnGet: OnGetFromPool,
+            actionOnRelease: OnReleaseToPool,
             actionOnDestroy: obj => Destroy(obj.gameObject),
             collectionCheck: true,
-            defaultCapacity: _poolCapacity,
-            maxSize: _poolMaxSize);
-    }
-
-    protected virtual void Start()
-    {
-        StartCoroutine(SpawnRoutine());
-        InvokeRepeating(nameof(UpdateStats), 0f, 0.5f);
-    }
-
-    private IEnumerator SpawnRoutine()
-    {
-        WaitForSeconds wait = new WaitForSeconds(_repeatRate);
-
-        while (true)
-        {
-            Spawn();
-
-            yield return wait;
-        }
+            defaultCapacity: PoolCapacity,
+            maxSize: PoolMaxSize);
     }
 
     public virtual void Spawn()
     {
-        T obj = _pool.Get();
-        obj.transform.position = _spawnArea.GetRandomPositionInside();
-        _spawnedCount++;
+        T obj = Pool.Get();
+        obj.transform.position = SpawnArea.GetRandomPositionInside();
+        SpawnedCount++;
+        StatsChanged?.Invoke();
     }
 
     public virtual void SpawnAt(Vector3 position)
     {
-        Vector3 flatPosition = new Vector3(position.x, _spawnArea.transform.position.y + 15f, position.z);
-
-        if (_spawnArea.IsPointInside(flatPosition) == false)
+        if (SpawnArea.IsPointInside(position) == false)
             return;
 
-        T obj = _pool.Get();
-        obj.transform.position = flatPosition;
-        _spawnedCount++;
+        T obj = Pool.Get();
+        obj.transform.position = position;
+        SpawnedCount++;
+        StatsChanged?.Invoke();
     }
 
-    protected virtual void OnGet(T obj)
+    protected virtual void OnGetFromPool(T obj)
     {
         obj.gameObject.SetActive(true);
 
         if (obj is ICubeDestroyable destroyable)
-            destroyable.Destroyed += position => HandleDestroyed(obj, position);
+            destroyable.Destroyed += pos => HandleDestroyed(obj, pos);
+
+        StatsChanged?.Invoke();
     }
 
-    protected virtual void OnRelease(T obj) =>
+    protected virtual void OnReleaseToPool(T obj)
+    {
         obj.gameObject.SetActive(false);
+        StatsChanged?.Invoke();
+    }
 
     private void HandleDestroyed(T obj, Vector3 position)
     {
-        DestroyedAt?.Invoke(position);
-
-        _pool.Release(obj);
+        ObjectDestroyedAt?.Invoke(position);
+        Pool.Release(obj);
+        StatsChanged?.Invoke();
     }
 
-    protected virtual void UpdateStats()
+    protected IEnumerator SpawnRoutine()
     {
-        if (_spawnedText != null)
-            _spawnedText.text = $"Всего: {_spawnedCount}";
+        WaitForSeconds wait = new WaitForSeconds(RepeatRate);
 
-        if (_createdText != null)
-            _createdText.text = $"Создано: {_pool.CountAll}";
-
-        if (_activeText != null)
-            _activeText.text = $"На сцене: {_pool.CountActive}";
+        while (true)
+        {
+            Spawn();
+            yield return wait;
+        }
     }
 
-    public void ReleaseToPool(T obj)
+    public void ReturnToPool(T obj)
     {
-        _pool.Release(obj);
+        Pool.Release(obj);
+        StatsChanged?.Invoke();
     }
 }

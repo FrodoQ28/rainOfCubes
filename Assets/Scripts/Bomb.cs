@@ -9,8 +9,8 @@ public class Bomb : MonoBehaviour, ICubeDestroyable
 {
     public event Action<Vector3> Destroyed;
 
-    [SerializeField] private float _explosionRadius = 25f;
-    [SerializeField] private float _explosionForce = 1000f;
+    [SerializeField] private float ExplosionRadius = 5f;
+    [SerializeField] private float ExplosionForce = 1000f;
 
     private Renderer _renderer;
     private Material _material;
@@ -20,8 +20,8 @@ public class Bomb : MonoBehaviour, ICubeDestroyable
     private void Awake()
     {
         _renderer = GetComponent<Renderer>();
-        _material = _renderer.material;
         _rigidbody = GetComponent<Rigidbody>();
+        _material = _renderer.material;
     }
 
     private void OnEnable()
@@ -31,10 +31,8 @@ public class Bomb : MonoBehaviour, ICubeDestroyable
         StartCoroutine(FadeAndExplode());
     }
 
-    private void OnDisable()
-    {
+    private void OnDisable() =>
         Destroyed = null;
-    }
 
     private void SetupTransparentMaterial()
     {
@@ -80,19 +78,25 @@ public class Bomb : MonoBehaviour, ICubeDestroyable
 
     private void Explode()
     {
-        Collider[] colliders = Physics.OverlapSphere(transform.position, _explosionRadius);
+        if (_rigidbody != null)
+        {
+            _rigidbody.linearVelocity = Vector3.zero;
+            _rigidbody.angularVelocity = Vector3.zero;
+            _rigidbody.isKinematic = true;
+        }
+
+        Collider[] colliders = Physics.OverlapSphere(transform.position, ExplosionRadius);
 
         foreach (Collider hit in colliders)
         {
             Rigidbody rb = hit.attachedRigidbody;
-
             if (rb == null || rb == _rigidbody)
                 continue;
 
             rb.AddExplosionForce(
-                _explosionForce,
+                ExplosionForce,
                 transform.position,
-                _explosionRadius);
+                ExplosionRadius);
         }
 
         Destroyed?.Invoke(transform.position);
@@ -101,6 +105,6 @@ public class Bomb : MonoBehaviour, ICubeDestroyable
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, _explosionRadius);
+        Gizmos.DrawWireSphere(transform.position, ExplosionRadius);
     }
 }

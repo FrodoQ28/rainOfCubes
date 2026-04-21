@@ -4,27 +4,20 @@ public class BombSpawner : ObjectSpawner<Bomb>
 {
     [SerializeField] private CubeSpawner _cubeSpawner;
 
-    protected override void Start()
+    private void Start()
     {
-        InvokeRepeating(nameof(UpdateStats), 0f, 0.5f);
-
-        if (_cubeSpawner != null)
-            _cubeSpawner.DestroyedAt += SpawnAt;
-    }
-
-    public override void SpawnAt(Vector3 position)
-    {
-        if (_spawnArea.IsPointInside(position) == false)
+        if (_cubeSpawner == null)
+        {
+            Debug.LogError($"{name}: не назначен CubeSpawner в BombSpawner");
             return;
+        }
 
-        Bomb obj = _pool.Get();
-        obj.transform.position = position;
-        _spawnedCount++;
+        _cubeSpawner.ObjectDestroyedAt += SpawnAt;
     }
 
     private void OnDestroy()
     {
         if (_cubeSpawner != null)
-            _cubeSpawner.DestroyedAt -= SpawnAt;
+            _cubeSpawner.ObjectDestroyedAt -= SpawnAt;
     }
 }

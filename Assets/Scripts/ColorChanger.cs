@@ -1,21 +1,27 @@
 using UnityEngine;
 
-public class ColorChanger
+[RequireComponent(typeof(Renderer))]
+public class ColorChanger : MonoBehaviour
 {
-    public void ChangeColor(Cube cube)
+    private Renderer _renderer;
+
+    private void Awake()
     {
-        if (cube.TryGetComponent(out Renderer renderer))
-        {
-            Color color = new Color(Random.value, Random.value, Random.value, 1f);
-            renderer.material.color = color;
-        }
+        _renderer = GetComponent<Renderer>();
     }
 
-    public void SetDefaultColor(Cube cube)
+    public void SetDefaultColor()
     {
-        if (cube.TryGetComponent(out Renderer renderer))
-        {
-            renderer.material.color = Color.white;
-        }
+        if (_renderer != null)
+            _renderer.material.color = Color.white;
+    }
+
+    public void SetRandomColor()
+    {
+        if (_renderer == null)
+            return;
+
+        Color color = new Color(Random.value, Random.value, Random.value, 1f);
+        _renderer.material.color = color;
     }
 }

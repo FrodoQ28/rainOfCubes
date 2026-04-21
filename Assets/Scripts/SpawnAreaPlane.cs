@@ -3,8 +3,8 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class SpawnAreaPlane : MonoBehaviour
 {
-    [SerializeField] private float _spawnHeightOffset = 15f;
-    [SerializeField] private float _edgeMargin = 10f;
+    [SerializeField] private float SpawnHeightOffset = 15f;
+    [SerializeField] private float EdgeMargin = 1f;
 
     private Collider _collider;
     private Bounds _bounds;
@@ -17,10 +17,10 @@ public class SpawnAreaPlane : MonoBehaviour
 
     public Vector3 GetRandomPositionInside()
     {
-        float minX = _bounds.min.x + _edgeMargin;
-        float maxX = _bounds.max.x - _edgeMargin;
-        float minZ = _bounds.min.z + _edgeMargin;
-        float maxZ = _bounds.max.z - _edgeMargin;
+        float minX = _bounds.min.x + EdgeMargin;
+        float maxX = _bounds.max.x - EdgeMargin;
+        float minZ = _bounds.min.z + EdgeMargin;
+        float maxZ = _bounds.max.z - EdgeMargin;
 
         if (minX > maxX)
         {
@@ -36,18 +36,17 @@ public class SpawnAreaPlane : MonoBehaviour
 
         float x = Random.Range(minX, maxX);
         float z = Random.Range(minZ, maxZ);
-
-        float y = _bounds.max.y + _spawnHeightOffset;
+        float y = _bounds.max.y + SpawnHeightOffset;
 
         return new Vector3(x, y, z);
     }
 
     public bool IsPointInside(Vector3 point)
     {
-        float minX = _bounds.min.x + _edgeMargin;
-        float maxX = _bounds.max.x - _edgeMargin;
-        float minZ = _bounds.min.z + _edgeMargin;
-        float maxZ = _bounds.max.z - _edgeMargin;
+        float minX = _bounds.min.x + EdgeMargin;
+        float maxX = _bounds.max.x - EdgeMargin;
+        float minZ = _bounds.min.z + EdgeMargin;
+        float maxZ = _bounds.max.z - EdgeMargin;
 
         return point.x >= minX && point.x <= maxX &&
                point.z >= minZ && point.z <= maxZ;
