@@ -4,29 +4,28 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(ColorChanger))]
-public class Cube : MonoBehaviour, ICubeDestroyable
+[RequireComponent(typeof(Rigidbody))]
+public class Cube : MonoBehaviour, IDestroyableByPosition, IExplodable, IForceDestroyable
 {
-    public event Action<Vector3> Destroyed;
-
-    [SerializeField] private string PlatformTag = "Platform";
-    [SerializeField] private float MinYToReturn = -10f;
     [SerializeField] private float MaxLifeTimeWithoutHit = 10f;
     [SerializeField] private int MinTimeToDestroy = 2;
     [SerializeField] private int MaxTimeToDestroy = 5;
 
+    private Rigidbody _rigidbody;
     private ColorChanger _colorChanger;
     private bool _isOnDestroy;
-    private bool _hasTouchedPlatform;
+
+    public event Action<Vector3> Destroyed;
 
     private void Awake()
     {
         _colorChanger = GetComponent<ColorChanger>();
+        _rigidbody = GetComponent<Rigidbody>();
     }
 
     private void OnEnable()
     {
         _isOnDestroy = false;
-        _hasTouchedPlatform = false;
         _colorChanger.SetDefaultColor();
         StartCoroutine(CheckOutOfBounds());
     }
@@ -36,23 +35,14 @@ public class Cube : MonoBehaviour, ICubeDestroyable
         Destroyed = null;
     }
 
-    private void Update()
-    {
-        if (_hasTouchedPlatform == false && _isOnDestroy == false && transform.position.y < MinYToReturn)
-        {
-            _isOnDestroy = true;
-            Destroyed?.Invoke(transform.position);
-        }
-    }
-
     private void OnCollisionEnter(Collision collision)
     {
         if (_isOnDestroy)
             return;
 
-        if (collision.gameObject.CompareTag(PlatformTag))
+        if (collision.gameObject.TryGetComponent<Platform>(out _))
         {
-            _hasTouchedPlatform = true;
+            //_hasTouchedPlatform = true;
             _isOnDestroy = true;
             StartCoroutine(DestroyAfterDelay(Random.Range(MinTimeToDestroy, MaxTimeToDestroy)));
             _colorChanger.SetRandomColor();
@@ -74,5 +64,16 @@ public class Cube : MonoBehaviour, ICubeDestroyable
             _isOnDestroy = true;
             Destroyed?.Invoke(transform.position);
         }
+    }
+
+    public void ForceDestroy() =>
+        Destroyed?.Invoke(transform.position);
+
+    public void ApplyExplosion(Vector3 origin, float force, float radius)
+    {
+        if (_rigidbody == null)
+            return;
+
+        _rigidbody.AddExplosionForce(force, origin, radius);
     }
 }

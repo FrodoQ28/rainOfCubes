@@ -5,17 +5,17 @@ using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(SphereCollider))]
-public class Bomb : MonoBehaviour, ICubeDestroyable
+public class Bomb : MonoBehaviour, IDestroyableByPosition, IExplodable, IForceDestroyable
 {
-    public event Action<Vector3> Destroyed;
-
-    [SerializeField] private float ExplosionRadius = 5f;
-    [SerializeField] private float ExplosionForce = 1000f;
+    [SerializeField] private float _explosionRadius = 5f;
+    [SerializeField] private float _explosionForce = 1000f;
 
     private Renderer _renderer;
     private Material _material;
     private Rigidbody _rigidbody;
     private float _lifeTime;
+
+    public event Action<Vector3> Destroyed;
 
     private void Awake()
     {
@@ -27,27 +27,15 @@ public class Bomb : MonoBehaviour, ICubeDestroyable
     private void OnEnable()
     {
         _lifeTime = Random.Range(2f, 5f);
-        SetupTransparentMaterial();
+        ResetAlpha();
         StartCoroutine(FadeAndExplode());
     }
 
     private void OnDisable() =>
         Destroyed = null;
 
-    private void SetupTransparentMaterial()
+    private void ResetAlpha()
     {
-        if (_material.HasProperty("_Color") == false)
-            return;
-
-        _material.SetFloat("_Mode", 3f);
-        _material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-        _material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-        _material.SetInt("_ZWrite", 0);
-        _material.DisableKeyword("_ALPHATEST_ON");
-        _material.EnableKeyword("_ALPHABLEND_ON");
-        _material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-        _material.renderQueue = 3000;
-
         Color color = _material.color;
         color.a = 1f;
         _material.color = color;
@@ -56,19 +44,15 @@ public class Bomb : MonoBehaviour, ICubeDestroyable
     private IEnumerator FadeAndExplode()
     {
         float elapsed = 0f;
-        bool hasColor = _material.HasProperty("_Color");
 
         while (elapsed < _lifeTime)
         {
             elapsed += Time.deltaTime;
             float alpha = 1f - (elapsed / _lifeTime);
 
-            if (hasColor)
-            {
-                Color color = _material.color;
-                color.a = alpha;
-                _material.color = color;
-            }
+            Color color = _material.color;
+            color.a = alpha;
+            _material.color = color;
 
             yield return null;
         }
@@ -85,18 +69,15 @@ public class Bomb : MonoBehaviour, ICubeDestroyable
             _rigidbody.isKinematic = true;
         }
 
-        Collider[] colliders = Physics.OverlapSphere(transform.position, ExplosionRadius);
+        Collider[] colliders = Physics.OverlapSphere(transform.position, _explosionRadius);
 
         foreach (Collider hit in colliders)
         {
-            Rigidbody rb = hit.attachedRigidbody;
-            if (rb == null || rb == _rigidbody)
+            if (hit.attachedRigidbody == _rigidbody)
                 continue;
 
-            rb.AddExplosionForce(
-                ExplosionForce,
-                transform.position,
-                ExplosionRadius);
+            if (hit.TryGetComponent<IExplodable>(out var explodable))
+                explodable.ApplyExplosion(transform.position, _explosionForce, _explosionRadius);
         }
 
         Destroyed?.Invoke(transform.position);
@@ -105,6 +86,17 @@ public class Bomb : MonoBehaviour, ICubeDestroyable
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, ExplosionRadius);
+        Gizmos.DrawWireSphere(transform.position, _explosionRadius);
     }
+
+    public void ApplyExplosion(Vector3 origin, float force, float radius)
+    {
+        if (_rigidbody == null)
+            return;
+
+        _rigidbody.AddExplosionForce(force, origin, radius);
+    }
+
+    public void ForceDestroy() =>
+        Destroyed?.Invoke(transform.position);
 }

@@ -3,11 +3,11 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Pool;
 
-public abstract class ObjectSpawner<T> : ObjectSpawnerBase where T : MonoBehaviour
+public abstract class ObjectSpawner<T> : ObjectSpawnerBase where T : MonoBehaviour, IDestroyableByPosition
 {
     [Header("Spawn Settings")]
     [SerializeField] protected T Prefab;
-    [SerializeField] protected SpawnAreaPlane SpawnArea;
+    [SerializeField] protected PlatformArea SpawnArea;
     [SerializeField] protected float RepeatRate = 0.5f;
     [SerializeField] protected int PoolCapacity = 20;
     [SerializeField] protected int PoolMaxSize = 20;
@@ -48,6 +48,37 @@ public abstract class ObjectSpawner<T> : ObjectSpawnerBase where T : MonoBehavio
             maxSize: PoolMaxSize);
     }
 
+    private void HandleDestroyed(T obj, Vector3 position)
+    {
+        ObjectDestroyedAt?.Invoke(position);
+        Pool.Release(obj);
+        StatsChanged?.Invoke();
+    }
+
+    protected virtual void OnGetFromPool(T obj)
+    {
+        obj.gameObject.SetActive(true);
+        obj.Destroyed += pos => HandleDestroyed(obj, pos);
+        StatsChanged?.Invoke();
+    }
+
+    protected virtual void OnReleaseToPool(T obj)
+    {
+        obj.gameObject.SetActive(false);
+        StatsChanged?.Invoke();
+    }
+
+    protected IEnumerator SpawnRoutine()
+    {
+        WaitForSeconds wait = new WaitForSeconds(RepeatRate);
+
+        while (true)
+        {
+            Spawn();
+            yield return wait;
+        }
+    }
+
     public virtual void Spawn()
     {
         T obj = Pool.Get();
@@ -65,40 +96,6 @@ public abstract class ObjectSpawner<T> : ObjectSpawnerBase where T : MonoBehavio
         obj.transform.position = position;
         SpawnedCount++;
         StatsChanged?.Invoke();
-    }
-
-    protected virtual void OnGetFromPool(T obj)
-    {
-        obj.gameObject.SetActive(true);
-
-        if (obj is ICubeDestroyable destroyable)
-            destroyable.Destroyed += pos => HandleDestroyed(obj, pos);
-
-        StatsChanged?.Invoke();
-    }
-
-    protected virtual void OnReleaseToPool(T obj)
-    {
-        obj.gameObject.SetActive(false);
-        StatsChanged?.Invoke();
-    }
-
-    private void HandleDestroyed(T obj, Vector3 position)
-    {
-        ObjectDestroyedAt?.Invoke(position);
-        Pool.Release(obj);
-        StatsChanged?.Invoke();
-    }
-
-    protected IEnumerator SpawnRoutine()
-    {
-        WaitForSeconds wait = new WaitForSeconds(RepeatRate);
-
-        while (true)
-        {
-            Spawn();
-            yield return wait;
-        }
     }
 
     public void ReturnToPool(T obj)

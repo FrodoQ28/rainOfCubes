@@ -268,6 +268,7 @@ GameObject:
   - component: {fileID: 470325773}
   - component: {fileID: 470325772}
   - component: {fileID: 470325771}
+  - component: {fileID: 470325775}
   m_Layer: 0
   m_Name: Cube (3)
   m_TagString: Platform
@@ -368,6 +369,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: -60, y: 90, z: 0}
+--- !u!114 &470325775
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 470325770}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe0ae7196e1451047830f8b6267c1e66, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Platform
 --- !u!1 &498629540
 GameObject:
   m_ObjectHideFlags: 0
@@ -505,6 +518,72 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -150}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0, y: 1}
+--- !u!1 &557537958
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 557537961}
+  - component: {fileID: 557537960}
+  - component: {fileID: 557537959}
+  m_Layer: 0
+  m_Name: DespawnZone
+  m_TagString: Platform
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &557537959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 557537958}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c5795cb67d013046bef22f651780bb2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DespawnZone
+--- !u!65 &557537960
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 557537958}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!4 &557537961
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 557537958}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -251.0039, y: 150, z: -111.54}
+  m_LocalScale: {x: 150, y: 0.75, z: 150}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -1285,6 +1364,7 @@ GameObject:
   - component: {fileID: 1527774485}
   - component: {fileID: 1527774484}
   - component: {fileID: 1527774483}
+  - component: {fileID: 1527774487}
   m_Layer: 0
   m_Name: Cube (1)
   m_TagString: Platform
@@ -1385,6 +1465,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: -60, y: 0, z: 0}
+--- !u!114 &1527774487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1527774482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe0ae7196e1451047830f8b6267c1e66, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Platform
 --- !u!1 &1534940587
 GameObject:
   m_ObjectHideFlags: 0
@@ -1397,6 +1489,7 @@ GameObject:
   - component: {fileID: 1534940590}
   - component: {fileID: 1534940589}
   - component: {fileID: 1534940588}
+  - component: {fileID: 1534940592}
   m_Layer: 0
   m_Name: Cube (2)
   m_TagString: Platform
@@ -1497,6 +1590,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: -60, y: 180, z: 0}
+--- !u!114 &1534940592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1534940587}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe0ae7196e1451047830f8b6267c1e66, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Platform
 --- !u!1 &1640055744
 GameObject:
   m_ObjectHideFlags: 0
@@ -1790,8 +1895,9 @@ GameObject:
   - component: {fileID: 1960427477}
   - component: {fileID: 1960427476}
   - component: {fileID: 1960427475}
+  - component: {fileID: 1960427480}
   m_Layer: 0
-  m_Name: SpawnAreaPlane
+  m_Name: PlatformArea
   m_TagString: Platform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1809,7 +1915,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62b87f6d5f3401e428053f52f2319882, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnAreaPlane
-  SpawnHeightOffset: 15
+  SpawnHeightOffset: 40
   EdgeMargin: 1
 --- !u!65 &1960427476
 BoxCollider:
@@ -1904,6 +2010,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1960427480
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1960427474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe0ae7196e1451047830f8b6267c1e66, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Platform
 --- !u!1 &2120842388
 GameObject:
   m_ObjectHideFlags: 0
@@ -2187,6 +2305,7 @@ SceneRoots:
   - {fileID: 1021102074}
   - {fileID: 744072075}
   - {fileID: 1960427479}
+  - {fileID: 557537961}
   - {fileID: 1527774486}
   - {fileID: 1534940591}
   - {fileID: 470325774}

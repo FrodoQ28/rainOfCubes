@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
-public class SpawnAreaPlane : MonoBehaviour
+public class PlatformArea : MonoBehaviour
 {
     [SerializeField] private float SpawnHeightOffset = 15f;
     [SerializeField] private float EdgeMargin = 1f;
