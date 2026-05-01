@@ -14,6 +14,7 @@ public class Bomb : MonoBehaviour, IDestroyableByPosition, IExplodable, IForceDe
     private Material _material;
     private Rigidbody _rigidbody;
     private float _lifeTime;
+    private Explosion _explosion;
 
     public event Action<Vector3> Destroyed;
 
@@ -22,6 +23,7 @@ public class Bomb : MonoBehaviour, IDestroyableByPosition, IExplodable, IForceDe
         _renderer = GetComponent<Renderer>();
         _rigidbody = GetComponent<Rigidbody>();
         _material = _renderer.material;
+        _explosion = new Explosion();
     }
 
     private void OnEnable()
@@ -69,16 +71,7 @@ public class Bomb : MonoBehaviour, IDestroyableByPosition, IExplodable, IForceDe
             _rigidbody.isKinematic = true;
         }
 
-        Collider[] colliders = Physics.OverlapSphere(transform.position, _explosionRadius);
-
-        foreach (Collider hit in colliders)
-        {
-            if (hit.attachedRigidbody == _rigidbody)
-                continue;
-
-            if (hit.TryGetComponent<IExplodable>(out var explodable))
-                explodable.ApplyExplosion(transform.position, _explosionForce, _explosionRadius);
-        }
+        _explosion.Apply(transform.position, _explosionForce, _explosionRadius);
 
         Destroyed?.Invoke(transform.position);
     }

@@ -1,9 +1,9 @@
 using TMPro;
 using UnityEngine;
 
-public class SpawnerStatsView : MonoBehaviour
+public class SpawnerStatsView<TSpawner> : MonoBehaviour where TSpawner : ObjectSpawnerBase
 {
-    [SerializeField] private ObjectSpawnerBase _spawner;
+    [SerializeField] private TSpawner _spawner;
     [SerializeField] private TextMeshProUGUI _spawnedText;
     [SerializeField] private TextMeshProUGUI _createdText;
     [SerializeField] private TextMeshProUGUI _activeText;
@@ -12,7 +12,7 @@ public class SpawnerStatsView : MonoBehaviour
     {
         if (_spawner == null)
         {
-            Debug.LogError($"{name}: не назначен Spawner в SpawnerStatsView");
+            Debug.LogError($"{name}: не назначен Spawner в {GetType().Name}");
             return;
         }
 

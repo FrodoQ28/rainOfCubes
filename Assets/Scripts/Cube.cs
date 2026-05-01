@@ -7,9 +7,9 @@ using Random = UnityEngine.Random;
 [RequireComponent(typeof(Rigidbody))]
 public class Cube : MonoBehaviour, IDestroyableByPosition, IExplodable, IForceDestroyable
 {
-    [SerializeField] private float MaxLifeTimeWithoutHit = 10f;
-    [SerializeField] private int MinTimeToDestroy = 2;
-    [SerializeField] private int MaxTimeToDestroy = 5;
+    [SerializeField] private float _maxLifeTimeWithoutHit = 10f;
+    [SerializeField] private int _minTimeToDestroy = 2;
+    [SerializeField] private int _maxTimeToDestroy = 5;
 
     private Rigidbody _rigidbody;
     private ColorChanger _colorChanger;
@@ -42,9 +42,8 @@ public class Cube : MonoBehaviour, IDestroyableByPosition, IExplodable, IForceDe
 
         if (collision.gameObject.TryGetComponent<Platform>(out _))
         {
-            //_hasTouchedPlatform = true;
             _isOnDestroy = true;
-            StartCoroutine(DestroyAfterDelay(Random.Range(MinTimeToDestroy, MaxTimeToDestroy)));
+            StartCoroutine(DestroyAfterDelay(Random.Range(_minTimeToDestroy, _maxTimeToDestroy)));
             _colorChanger.SetRandomColor();
         }
     }
@@ -57,7 +56,7 @@ public class Cube : MonoBehaviour, IDestroyableByPosition, IExplodable, IForceDe
 
     private IEnumerator CheckOutOfBounds()
     {
-        yield return new WaitForSeconds(MaxLifeTimeWithoutHit);
+        yield return new WaitForSeconds(_maxLifeTimeWithoutHit);
 
         if (_isOnDestroy == false)
         {
